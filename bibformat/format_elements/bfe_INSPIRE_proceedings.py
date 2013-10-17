@@ -40,20 +40,23 @@ def format_element(bfo, newline=False):
         # it's a proceeding, so return nothing
         return ''
 
-    cnum = str(bfo.field('773__w'))
+    cnums = bfo.fields('773__w')
     out = ""
-    if not cnum:
+    if not cnums:
         #No CNUM, return empty string
         return out
+    for cnum in cnums:
     # some CNUMs have "/" instead of "-" as a separator, so we change them
-    cnum = cnum.replace("/", "-")
-    search_result = search_pattern(p="773__w:" + cnum + " and 980__a:proceedings")
-    if search_result:
-        recID = list(search_result)[0]
-        if recID != '':
-            out = '<a href="/record/' + str(recID) + '">Proceedings</a>'
-            if newline:
-                out += '<br/>'
+        cnum = str(cnum).replace("/", "-")
+        search_result = search_pattern(p="773__w:" + cnum + " and 980__a:proceedings")
+        if search_result:
+            recID = list(search_result)[0]
+            if recID != '':
+                out += 'Proceeding: <a href="/record/' + str(recID) + '">' + cnum + '</a>, '
+    if out:
+        out = out[:-2] # remove ', '
+        if newline:
+            out += '<br/>'
 
     return out
 

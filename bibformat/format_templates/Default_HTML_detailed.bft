@@ -24,6 +24,7 @@ affiliation_prefix="<small> (" affiliation_suffix=") </small>" />
 <BFE_INSPIRE_HEP_ERRATUM prefix="<li>" suffix="</li>"/>
 <BFE_INSPIRE_SERIES prefix="<li>" suffix="</li>"/>
 <BFE_INSPIRE_HEP_PUBLISHER prefix="<li>" suffix="</li>" separator="<br/>"/>
+<BFE_INSPIRE_BOOK_CHAPTER_BOOK_INFO book_prefix="<li><small>" book_suffix="</small></li>" />
 <BFE_INSPIRE_DOI prefix="<li>DOI: " suffix="</li>"/>
 <BFE_INSPIRE_HDL prefix="<li>HDL: " suffix="</li>"/>
 <BFE_INSPIRE_ISBN prefix="<li>ISBN: " suffix="</li>" />
@@ -48,9 +49,10 @@ suffix_fr=""
 
 <BFE_INSPIRE_PACS prefix="<br /><small><strong>PACS: </strong>" suffix="</small>" />
 
-<BFE_NOTES
-note_prefix="<br /><small><strong>Note: </strong>"
+<BFE_NOTES note_prefix="<br /><small><strong>Note: </strong>"
 note_suffix=" </small>" />
+<BFE_INSPIRE_BOOK_CHAPTER_BOOK_INFO book_prefix="<br /><small><strong>Book: </strong>"
+book_suffix=" </small>" />
 <BFE_INSPIRE_HEP_THESIS prefix="<br /><small><strong>Thesis: </strong>" suffix="</small>" />
 <BFE_INSPIRE_HEP_SUPERVISOR
 prefix="<br /><small><strong>Supervisor: </strong>"

@@ -12,6 +12,8 @@ name_last_first="no" link_extension="yes"/>
 <BFE_INSPIRE_date suffix=". " /> <BFE_FIELD tag="300a" suffix=" pp. " />
 <BFE_NOTES_BRIEF />
 <BFE_INSPIRE_PUBLI_INFO prefix="<br />Published in <b>" suffix="</b>" />
+<BFE_INSPIRE_BOOK_CHAPTER_BOOK_INFO book_prefix="<br /><small><strong>Book: </strong>"
+book_suffix=" </small>" view="detailed" />
 <BFE_REPORT_NUMBERS prefix="<br />" />
 <BFE_INSPIRE_DOI prefix="<br />DOI: " />
 <BFE_INSPIRE_CONFERENCE prefix="<br />" />

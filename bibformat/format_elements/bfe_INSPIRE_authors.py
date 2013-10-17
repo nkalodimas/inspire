@@ -281,26 +281,26 @@ def format_element(bfo, limit, separator='; ',
     elif interactive == "yes" and ((colls and not short_coll) or (limit.isdigit() and nb_authors > int(limit))):
         out = '''
         <script>
-        function toggle_authors_visibility(){
-            var more = document.getElementById('more');
-            var link = document.getElementById('link');
-            var extension = document.getElementById('extension');
-            if (more.style.display=='none'){
-                more.style.display = '';
-                extension.style.display = 'none';
-                link.innerHTML = "%(show_less)s"
+        function toggle_authors_visibility(anchor){
+            var jsmall = $(anchor).closest('small');
+            var more = jsmall.siblings('#more');
+            var link = $(anchor);
+            var extension = jsmall.siblings('#extension');
+            if ( more.css("display") == 'none'){
+                more.show();
+                extension.hide();
+                link.text("%(show_less)s");
             } else {
-                more.style.display = 'none';
-                extension.style.display = '';
-                link.innerHTML = "%(show_more)s"
+                more.hide();
+                extension.show();
+                link.text("%(show_more)s");
             }
-            link.style.color = "rgb(204,0,0);"
+            link.css("color", "rgb(204,0,0)");
         }
 
         function set_up(){
             var extension = document.getElementById('extension');
             extension.innerHTML = '%(extension)s';
-            toggle_authors_visibility();
         }
 
         </script>
@@ -317,12 +317,11 @@ def format_element(bfo, limit, separator='; ',
             more = separator.join(authors[int(limit):len(authors)])
 
         out += show
-        out += ' <span id="more" style="">' + more + '</span>'
-        out += ' <span id="extension"></span>'
+        out += ' <span id="more" style="display:none;">' + more + '</span>'
+        out += ' <span id="extension">%(extension)s</span>' % {'extension': extension}
         out += ' <small><i><a id="link" href="#"' + \
-               ' style="color:green;background:white;" onclick="toggle_authors_visibility()" ' + \
-               ' style="color:rgb(204,0,0);"></a></i></small>'
-        out += '<script>set_up()</script>'
+               ' style="color:green;background:white;" onclick="toggle_authors_visibility(this)" ' + \
+               ' style="color:rgb(204,0,0);">%(show_more)s</a></i></small>' % {'show_more': _("Show all %i authors") % nb_authors}
         return out
     elif nb_authors > 0:
         if markup == 'latex' and nb_authors > 1:
