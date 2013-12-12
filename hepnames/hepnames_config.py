@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+##
+## This file is part of Invenio.
+## Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008 CERN.
+##
 ## Invenio is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
 ## published by the Free Software Foundation; either version 2 of the
@@ -11,29 +16,11 @@
 ## You should have received a copy of the GNU General Public License
 ## along with Invenio; if not, write to the Free Software Foundation, Inc.,
 ## 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-"""BibFormat element - Prints Update Button
-"""
+
+# pylint: disable-msg=C0301
+
+"""HepNames configuration parameters unique to INSPIRE."""
+
 __revision__ = "$Id$"
 
-import urllib
-
-def format_element(bfo, separator='; '):
-    """
-    This is the default format for adding an update button
-    @param separator: the separator between urls.
-    @param style: CSS class of the link
-    """
-    try:
-        hepnames_id = bfo.control_field('001')
-    except:
-        return ''
-
-    url = "/hepnames.py/update?IRN=" + urllib.quote(hepnames_id)
-    return '<a href="' + url + '">' + '<img src="/img/update.jpg"></a>'
-
-def escape_values(bfo):
-    """
-    Called by BibFormat in order to check if output of this element
-    should be escaped.
-    """
-    return 0
+CFG_HEP_NAME_UPDATE_QUEUE = "Test"
