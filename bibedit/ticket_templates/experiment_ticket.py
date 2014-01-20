@@ -10,7 +10,7 @@ def get_template_data(record):
 	report_numbers = record_get_field_values('037','_','_','a')
 	queue = "Exp"
 	subject = "unknown experiment in #%s %s" % ( recid, ' '.join(report_numbers))
-	content = "This unknown experiment:<br/><br/>\
+	content = "This unknown experiment: \n\n\
 				has appeared in this paper. Please create a record in Experiments and update the paper at\
 				%s/record/edit/%s" % ( CFG_SITE_URL, recid )
 	return (queue, subject, content)
