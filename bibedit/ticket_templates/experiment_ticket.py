@@ -11,6 +11,6 @@ def get_template_data(record):
 	queue = "Exp"
 	subject = "unknown experiment in #%s %s" % ( recid, ' '.join(report_numbers))
 	content = "This unknown experiment: \n\n\
-				has appeared in this paper. Please create a record in Experiments and update the paper at\
-				%s/record/edit/%s" % ( CFG_SITE_URL, recid )
+	has appeared in this paper. Please create a record in Experiments and update the paper at\
+	 %s/record/edit/%s" % ( CFG_SITE_URL, recid )
 	return (queue, subject, content)

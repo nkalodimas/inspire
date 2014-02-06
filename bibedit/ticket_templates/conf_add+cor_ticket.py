@@ -10,6 +10,6 @@ def get_template_data(record):
 	queue = "CONF_add+cor"
 	subject = "new conf"
 	content = "The record %(site)s/record/edit/%(recid)s has information on a new conference.\
-				Please create a conference record if not done in the meantime, and update the\
-				 paper at %(site)s/record/edit/%(recid)s" % { 'site' : CFG_SITE_URL, 'recid' : recid }
+	Please create a conference record if not done in the meantime, and update the\
+	 paper at %(site)s/record/edit/%(recid)s" % { 'site' : CFG_SITE_URL, 'recid' : recid }
 	return (queue, subject, content)
