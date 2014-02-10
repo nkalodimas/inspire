@@ -36,7 +36,7 @@ def format_element(bfo, book_prefix='Book: ', separator='; ', view='detailed'):
     book_details = get_book_details(bfo)
     if book_details:
         return book_prefix + book_details
-
+    return ''
 
 def escape_values(bfo):
     """
@@ -53,8 +53,8 @@ def get_book_details(bfo):
     of the book formatted.
     """
     details = ''
-    recid = bfo.field('773__0')
-    if "BookChapter" in bfo.fields('980__a') and recid:
+    recid = int(bfo.field('773__0'))
+    if "bookchapter" in [x.lower() for x in bfo.fields('980__a')] and recid:
         record = get_record(recid)
         if record:
             #chapter = record_get_field_value(record, '024', '', '', 'a').split('_')[-1]
@@ -64,23 +64,26 @@ def get_book_details(bfo):
             second_author = record_get_field_value(record, '700', '', '', 'a')
             second_author_is_editor = record_get_field_value(record, '700', '', '', 'e')
             number_of_authors = len(record_get_field_values(record, '700', '', '', 'a'))
+            pages = bfo.field('773__c')
             authors_suffix = ''
             if number_of_authors > 1:
                 authors_suffix = 'et al.'
-            publisher = record_get_field_value(record, '260', '', '', 'b')
-            year = record_get_field_value(record, '260', '', '', 'c')
-            details += 'chapter of '
-            details += '\"' + title + '\",'
-            details += '<br/>' + main_author
+            splitted_author = main_author.split(', ')
+            if len(splitted_author) == 2:
+                main_author = splitted_author[1] + ' ' + splitted_author[0]
+            details += main_author
             if main_author_is_editor:
                 details += ' (' + main_author_is_editor + ')'
             if second_author:
+                splitted_second_author = second_author.split(', ')
+                if len(splitted_second_author) == 2:
+                    second_author = splitted_second_author[1] + ' ' + splitted_second_author[0]
                 details += ', ' + second_author
                 if second_author_is_editor:
                     details += ' (' + second_author_is_editor + ')'
             details += authors_suffix
-            if publisher:
-                details += '<br/>' + ', published by ' + publisher
-                if year:
-                    details += ' (' + year + ')'
+            details += ' : \"<a href=\"/record/' + str(recid) + '\" >' + title + '</a>\"'
+            if pages:
+                details += ', ' + pages
+
     return details

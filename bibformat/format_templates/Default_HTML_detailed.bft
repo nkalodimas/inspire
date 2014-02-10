@@ -52,8 +52,6 @@ suffix_fr=""
 
 <BFE_NOTES note_prefix="<br /><small><strong>Note: </strong>"
 note_suffix=" </small>" />
-<BFE_INSPIRE_BOOK_CHAPTER_BOOK_INFO book_prefix="<br /><small><strong>Book: </strong>"
-book_suffix=" </small>" />
 <BFE_INSPIRE_HEP_THESIS prefix="<br /><small><strong>Thesis: </strong>" suffix="</small>" />
 <BFE_INSPIRE_HEP_SUPERVISOR
 prefix="<br /><small><strong>Supervisor: </strong>"

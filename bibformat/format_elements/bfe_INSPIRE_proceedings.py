@@ -45,17 +45,22 @@ def format_element(bfo, newline=False):
     if not cnums:
         #No CNUM, return empty string
         return out
+    found_rec_IDs = []
+    found_cnums = []
     for cnum in cnums:
     # some CNUMs have "/" instead of "-" as a separator, so we change them
         cnum = str(cnum).replace("/", "-")
         search_result = search_pattern(p="773__w:" + cnum + " and 980__a:proceedings")
         if search_result:
-            recID = list(search_result)[0]
-            if recID != '':
-                out += 'Proceeding: <a href="/record/' + str(recID) + '">' + cnum + '</a>, '
-    if out:
-        out = out[:-2] # remove ', '
-        if newline:
+            search_rec_IDs = list(search_result)
+            found_rec_IDs.extend(search_rec_IDs)
+            found_cnums.append(cnum)
+    proceedings_nums = len(found_rec_IDs)
+    if proceedings_nums == 1:
+        out += '<a href="/record/' + str(found_rec_IDs[0]) + '">Proceedings</a>'
+    elif proceedings_nums > 1:
+        out += '<a href="/search?p=(773__w:' + " OR 773__w:".join(found_cnums) + ') AND 980__a:proceedings">Proceedings</a>'
+    if out and newline:
             out += '<br/>'
 
     return out

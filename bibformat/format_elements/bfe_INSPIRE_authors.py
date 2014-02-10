@@ -286,20 +286,30 @@ def format_element(bfo, limit, separator='; ',
         out = '''
         <script>
         function toggle_authors_visibility(anchor){
+            var scrollToTop = false;
+            if($(anchor).hasClass("bottom_link")){
+                anchor = $(anchor).closest('#more').prev().find('#link');
+                scrollToTop = true;
+            }
             var jsmall = $(anchor).closest('small');
             var more = jsmall.siblings('#more');
             var link = $(anchor);
             var extension = jsmall.siblings('#extension');
             if ( more.css("display") == 'none'){
                 more.show();
-                extension.hide();
                 link.text("%(show_less)s");
+                link.css("color", "rgb(204,0,0)");
             } else {
                 more.hide();
-                extension.show();
                 link.text("%(show_more)s");
+                link.css("color", "green");
+                if (scrollToTop){
+                    $('html, body').animate({
+                        scrollTop: link.closest('div.detailedrecordbox').offset().top
+                    }, 1000);
+                }
             }
-            link.css("color", "rgb(204,0,0)");
+            event.preventDefault();
         }
 
         function set_up(){
@@ -321,11 +331,16 @@ def format_element(bfo, limit, separator='; ',
             more = separator.join(authors[int(limit):len(authors)])
 
         out += show
-        out += ' <span id="more" style="display:none;">' + more + '</span>'
         out += ' <span id="extension">%(extension)s</span>' % {'extension': extension}
         out += ' <small><i><a id="link" href="#"' + \
                ' style="color:green;background:white;" onclick="toggle_authors_visibility(this)" ' + \
                ' style="color:rgb(204,0,0);">%(show_more)s</a></i></small>' % {'show_more': _("Show all %i authors") % nb_authors}
+        bottom_link = ''
+        if nb_authors > 300:
+            bottom_link = ' <small><i><a class="bottom_link" href="#"' + \
+               ' style="color:rgb(204,0,0);background:white;" onclick="toggle_authors_visibility(this)" ' + \
+               ' >%(show_less)s</a></i></small>' % {'show_less': _("Hide")}
+        out += ' <span id="more" style="display:none;"><br/>' + more + bottom_link + '</span>'
         return out
     elif nb_authors > 0:
         if markup == 'latex' and nb_authors > 1:
