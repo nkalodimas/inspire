@@ -6,7 +6,8 @@ from tempfile import mkstemp
 from invenio.webpage import page
 from invenio.webuser import page_not_authorized
 from invenio.webinterface_handler import wash_urlargd
-from invenio.config import CFG_SITE_LANG, CFG_SITE_URL, CFG_TMPSHAREDDIR, CFG_HEP_NAME_UPDATE_QUEUE
+from invenio.config import CFG_SITE_LANG, CFG_SITE_URL, CFG_TMPSHAREDDIR
+from invenio.hepnames_config import CFG_HEP_NAME_UPDATE_QUEUE
 from invenio.urlutils import redirect_to_url
 from invenio.messages import gettext_set_language, wash_language
 from invenio.search_engine import perform_request_search
@@ -39,6 +40,7 @@ def update(req, **args):
                  'status': (str, ''),
                  'username': (str, ''),
                  'email': (str, ''),
+                 'orcid': (str, ''),
                  'twitter': (str, ''),
                  'blog': (str, ''),
                  'field': (list, []),
@@ -137,6 +139,11 @@ def update(req, **args):
             full_name = record_get_field_value(hepname_bibrec, tag="100", ind1="", ind2="", code="a")
             display_name = record_get_field_value(hepname_bibrec, tag="100", ind1="", ind2="", code="q")
             email = record_get_field_value(hepname_bibrec, tag="371", ind1="", ind2="", code="m")
+            orcid = ''
+            for instance in record_get_field_instances(hepname_bibrec, tag="035", ind1="", ind2=""):
+                if 'ORCID' in field_get_subfield_values(instance, '9'):
+                    orcid = field_get_subfield_values(instance, 'a')[0]
+                    break
             twitter = ''
             for instance in record_get_field_instances(hepname_bibrec, tag="035", ind1="", ind2=""):
                 if 'TWITTER' in field_get_subfield_values(instance, '9'):
@@ -176,7 +183,7 @@ def update(req, **args):
                     web_page = field_get_subfield_values(instance, 'u')[0]
 
             # Create form and pass as parameters all the content from the record
-            body = tmpl_update_hep_name(rec_id, full_name, display_name, email,
+            body = tmpl_update_hep_name(rec_id, full_name, display_name, email, orcid,
                                                  twitter, status, research_field_list,
                                                  institution_list, phd_advisor_list,
                                                  experiment_list, web_page, blog,
@@ -267,6 +274,14 @@ def create_bibrecord(person, argd, form_to_marc_mapping):
             '', [(marc_field[5], twitter)])
         if field_created != -1:
                     record_add_subfield_into(record, marc_field[:3], '9', 'TWITTER', field_position_global=field_created)
+    # add orcid
+    if argd['orcid']:
+        marc_field = '035__a'
+        orcid = argd['orcid']
+        field_created = record_add_field(record, marc_field[:3], marc_field[3], marc_field[4],
+            '', [(marc_field[5], orcid)])
+        if field_created != -1:
+                    record_add_subfield_into(record, marc_field[:3], '9', 'ORCID', field_position_global=field_created)
     # add blog
     if argd['blog']:
         marc_field = '8564_u'

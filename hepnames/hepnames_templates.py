@@ -3,6 +3,11 @@
 """HepNames update form templates """
 
 import xml.sax.saxutils
+try:
+    from invenio.config import CFG_BASE_URL
+except ImportError:
+    from invenio.config import CFG_SITE_URL
+    CFG_BASE_URL = CFG_SITE_URL
 
 def tmpl_update_hep_name_headers():
         """
@@ -47,16 +52,35 @@ def tmpl_update_hep_name_headers():
                                 width: 130px;
                                 height: 30px;
                             }
+
+                            input::-webkit-input-placeholder {
+                              color: #999;
+                            }
+                            input:-moz-placeholder {
+                              color: #999;
+                            }
+                            input:-ms-input-placeholder {
+                              color: #999;
+                            }
+                            .ui-autocomplete{
+                              max-height: 225px;
+                              overflow-y: auto;
+                            }
+                            .ui-menu-item{
+                              font-size: 12px;
+                            }
                        </style>
                        <script type="text/javascript" src="/js/hepnames_update.js"></script>
-                        """)
+                       <script type="text/javascript" src="%(site_url)s/js/jquery-ui.min.js"></script>
+                       <link type="text/css" href="%(site_url)s/img/jquery-ui.css" rel="stylesheet" />
+                        """ % {'site_url': CFG_BASE_URL})
         return "\n".join(html)
 
 def tmpl_update_hep_name(rec_id, full_name, display_name, email,
-                         twitter, status, research_field_list,
-                         institution_list, phd_advisor_list,
-                         experiment_list, web_page, blog,
-                         keynumber, referer):
+                         orcid, twitter, status,
+                         research_field_list,institution_list,
+                         phd_advisor_list, experiment_list, web_page,
+                         blog, keynumber, referer):
     """
     Create form to update a hep name
     """
@@ -121,7 +145,7 @@ def tmpl_update_hep_name(rec_id, full_name, display_name, email,
         institution = """
                       <tr>
                       <td  class="cell_padding"><input name="aff.str" type="hidden">
-                      <input type="text" name="inst%(institution_num)s" size="35" value =%(institution_name)s /></td>
+                      <input type="text" name="inst%(institution_num)s" id="inst%(institution_num)s" size="35" value =%(institution_name)s /></td>
                       <td  class="cell_padding"><select name="rank%(institution_num)s">
                       <option selected value=''> </option>
                       <option value='SENIOR'>Senior(permanent)</option>
@@ -137,6 +161,11 @@ def tmpl_update_hep_name(rec_id, full_name, display_name, email,
                       <TD class="cell_padding" style="text-align: center;" ><INPUT TYPE=CHECKBOX VALUE='Current' name="current%(institution_num)s"></TD>
                       <TD class="cell_padding"><input type="button" value="Delete row" class="formbutton" onclick="removeRow(this);" /></TD>
                       </tr>
+                      <script type="text/javascript">
+                        $(function () {
+                          autocomplete_kb($("#inst%(institution_num)s"), "InstitutionsCollection");
+                        })
+                      </script>
                       """% { 'institution_name': xml.sax.saxutils.quoteattr(institution_entry[0]),
                              'start_year': xml.sax.saxutils.quoteattr(institution_entry[2]),
                              'end_year': xml.sax.saxutils.quoteattr(institution_entry[3]),
@@ -315,6 +344,10 @@ def tmpl_update_hep_name(rec_id, full_name, display_name, email,
                         </TD>
                     </TR>
                     <TR>
+                        <TD><STRONG>ORCID </STRONG>(Public)</TD>
+                        <TD><INPUT SIZE=24 value=%(orcid)s name='orcid' id='orcid'></TD>
+                    </TR>
+                    <TR>
                         <TD><STRONG>Twitter username</STRONG></TD>
                         <TD><INPUT SIZE=24 value=%(twitter)s name='twitter' ID='twitter'></TD>
                     </TR>
@@ -376,12 +409,12 @@ def tmpl_update_hep_name(rec_id, full_name, display_name, email,
                     <table class="form2"><tbody>
                     <tr>
                     <TD class="left_column" ><span ><STRONG>Ph.D. Advisor</STRONG></span></TD>
-                    <TD class="right_column" ><span ><INPUT SIZE=24 value=%(phd_advisor)s name=Advisor1> <FONT SIZE=2>E.G.
+                    <TD class="right_column" ><span ><INPUT SIZE=24 value=%(phd_advisor)s name=Advisor1 id=Advisor1 > <FONT SIZE=2>E.G.
                     Beacom, John Francis</FONT> </span></TD>
                     </TR>
                     <tr>
                     <TD class="left_column" ><span ><STRONG>2nd Ph.D. Advisor</STRONG></span></TD>
-                    <TD class="right_column" ><span ><INPUT SIZE=24 value=%(phd_advisor_sec)s name=Advisor2> <FONT SIZE=2>E.G.
+                    <TD class="right_column" ><span ><INPUT SIZE=24 value=%(phd_advisor_sec)s name=Advisor2 id=Advisor2 > <FONT SIZE=2>E.G.
                     Beacom, John Francis</FONT> </span></TD>
                     </TR>
                     <tr>
@@ -412,11 +445,18 @@ def tmpl_update_hep_name(rec_id, full_name, display_name, email,
                     </tr>
                     </tbody></TABLE>
                     <br/><INPUT type=submit id="submit_btn" class="formbutton" value="Send Request"></FORM>
+                    <script type="text/javascript">
+                        $(function () {
+                          autocomplete_kb($("#Advisor1"), "Advisors");
+                          autocomplete_kb($("#Advisor2"), "Advisors");
+                        })
+                      </script>
                     """ % {'keynumber' : keynumber,
                           'full_name': xml.sax.saxutils.quoteattr(full_name),
                           'display_name': xml.sax.saxutils.quoteattr(display_name),
                           'email': xml.sax.saxutils.quoteattr(email),
                           'email_public': xml.sax.saxutils.quoteattr(email),
+                          'orcid': xml.sax.saxutils.quoteattr(orcid),
                           'twitter': xml.sax.saxutils.quoteattr(twitter),
                           'phd_advisor': xml.sax.saxutils.quoteattr(phd_advisor),
                           'phd_advisor_sec': xml.sax.saxutils.quoteattr(phd_advisor_sec),

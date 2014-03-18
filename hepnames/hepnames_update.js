@@ -27,6 +27,7 @@ var goesto= 'slaclib2';
 var goesalso='hepnames';
 var place = '@slac';
 var occcnt=1;
+var loadedKBs= {};
 
 $(function() {
 	generateCaptcha();
@@ -92,6 +93,8 @@ function addRow()
 	oCell = newRow.insertCell(0);
 	tempvar = "<input name='aff.str' type='hidden'><input type='text' name='inst";
 	tempvar += occcnt;
+	tempvar += "' id='inst";
+	tempvar += occcnt;
 	tempvar +="' size='35'>";
 	oCell.innerHTML = tempvar;
 	oCell.className = "cell_padding";
@@ -129,6 +132,7 @@ function addRow()
 	tempvar ="<input type='button' class='formbutton' value='Delete row' onclick='removeRow(this);'/>";
 	oCell.innerHTML = tempvar;
 	oCell.className = "cell_padding";
+    autocomplete_kb($("#inst" + occcnt), "InstitutionsCollection");
 }
 //deletes the specified row from the table
 function removeRow(src)
@@ -250,4 +254,50 @@ function emailCheck () {
 				}
 				// If weve gotten this far, everythingsvalid!
 				return true;
+}
+
+function autocomplete_kb(that, kb_name) {
+	var callBack = getKBContents(kb_name);
+    that.autocomplete({
+    minLength: 2,
+    source: callBack,
+    focus: function() {
+      // prevent value inserted on focus
+      return false;
+    },
+    select: function(event, ui) {
+      $(this).val(ui.item.value);
+      return false;
+    }
+    });
+}
+
+function getKBContents(kb_name){
+  /*
+   * Handles how data will be retrieved for every search,
+   */
+    var callback = function(request, response) {
+        // data are already loaded
+        if ( kb_name in loadedKBs ) {
+            response($.ui.autocomplete.filter(loadedKBs[kb_name], request.term));
+        }
+        // fetch case
+        else {
+            $.getJSON( "/kb/export",
+                       { kbname: kb_name, format: 'jquery'},
+                       function(json) {
+                          loadedKBs[kb_name] = json;
+                          response($.ui.autocomplete.filter(json, request.term));
+                       })
+                       .error(function(jqxhr, textStatus, error) {
+                          var err = textStatus + ", " + error;
+                          if (jqxhr.responseText.indexOf('There is no knowledge base with that name') != -1 ) {
+                            err = 'There is no knowledge base with that name';
+                          }
+                          console.log( "Request Failed: " + err );
+                          response(null);
+                       });
+        }
+    };
+    return callback;
 }

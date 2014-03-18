@@ -3,9 +3,9 @@
 include ../config.mk
 -include ../config-local.mk
 
-LIBFILES = hepnames.py hepnames_config.py
+LIBFILES = hepnames.py
 LIBDIR = $(WEBDIR)
-PYLIBFILES = hepnames_templates.py
+PYLIBFILES = hepnames_templates.py hepnames_config.py
 PYLIBDIR = $(PREFIX)/lib/python/invenio
 JSFILES = hepnames_update.js
 
