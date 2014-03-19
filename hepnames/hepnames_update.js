@@ -27,6 +27,7 @@ var goesto= 'slaclib2';
 var goesalso='hepnames';
 var place = '@slac';
 var occcnt=1;
+var occcntExp=1;
 var loadedKBs= {};
 
 $(function() {
@@ -91,7 +92,8 @@ function addRow()
 	occcnt++;
 	//add 3 cells (<td>) to the new row and set the innerHTML to contain text boxes
 	oCell = newRow.insertCell(0);
-	tempvar = "<input name='aff.str' type='hidden'><input type='text' name='inst";
+	tempvar = "<input name='aff.str' type='hidden'><input type='text' " +
+				"placeholder=\"Start typing for autocomplete\" name='inst";
 	tempvar += occcnt;
 	tempvar += "' id='inst";
 	tempvar += occcnt;
@@ -141,6 +143,59 @@ function removeRow(src)
 	//once the row reference is obtained, delete it passing in its rowIndex
 	document.getElementById("tblGrid").deleteRow(oRow.rowIndex);
 }
+
+function addRowExp()
+{
+	//add a row to the rows collection and get a reference to the newly added row
+	var tbl = document.getElementById("tblGridExp");
+	var lastRow = tbl.rows.length;
+	var newRow = document.getElementById("tblGridExp").insertRow(lastRow);
+	var tempvar;
+	occcntExp++;
+	//add 5 cells (<td>) to the new row and set the innerHTML to contain text boxes
+	oCell = newRow.insertCell(0);
+	tempvar = "<input type='text' placeholder=\"Start typing for autocomplete\" name='exp";
+	tempvar += occcntExp;
+	tempvar += "' id='exp";
+	tempvar += occcntExp;
+	tempvar +="' size='35'>";
+	oCell.innerHTML = tempvar;
+	oCell.className = "cell_padding";
+	oCell = newRow.insertCell(1);
+	tempvar = "<input type='text' name='syExp";
+	tempvar += occcntExp;
+	tempvar += "' size='4'>";
+	oCell.innerHTML= tempvar;
+	oCell.className = "cell_padding";
+	oCell = newRow.insertCell(2);
+	tempvar = "<input type='text' name='eyExp";
+	tempvar += occcntExp;
+	tempvar += "' size='4'>";
+	oCell.innerHTML= tempvar;
+	oCell.className = "cell_padding";
+	oCell = newRow.insertCell(3);
+	tempvar = "<input type='CHECKBOX' value='Current' name='currentExp";
+	tempvar += occcntExp;
+	tempvar += "' />";
+	oCell.innerHTML = tempvar;
+	oCell.className = "cell_padding";
+	oCell.style.textAlign = "center";
+	oCell = newRow.insertCell(4);
+	tempvar ="<input type='button' class='formbutton' value='Delete row' onclick='removeRowExp(this);'/>";
+	oCell.innerHTML = tempvar;
+	oCell.className = "cell_padding";
+    autocomplete_kb($("#exp" + occcntExp), "ExperimentsCollection");
+}
+
+//deletes the specified row from the Experiments table
+function removeRowExp(src)
+{
+	var oRow = src.parentNode.parentNode;
+	//once the row reference is obtained, delete it passing in its rowIndex
+	document.getElementById("tblGridExp").deleteRow(oRow.rowIndex);
+}
+
+
 function checksp()
 {
 	alertmsg = document.getElementById('beatspam').value

@@ -52,6 +52,7 @@ def update(req, **args):
             }
 
             institutions_numbers = add_institutions_to_wash(form, wash_dict)
+            experiments_numbers = add_experiments_to_wash(form, wash_dict)
 
             argd = wash_urlargd(form,wash_dict)
 
@@ -79,6 +80,7 @@ def update(req, **args):
                 {'Advisor2': '701__a'}]
 
             add_institutions_to_form_to_marc_mapping(institutions_numbers, argd, form_to_marc_mapping)
+            add_experiments_to_form_to_marc_mapping(experiments_numbers, argd, form_to_marc_mapping)
 
             bib_record = create_bibrecord(person, argd, form_to_marc_mapping)
 
@@ -173,7 +175,22 @@ def update(req, **args):
                     institution_info[4] = field_get_subfield_values(instance, "z")[0]
                 institution_list.append(institution_info)
             phd_advisor_list = record_get_field_values(hepname_bibrec, tag="701", ind1="", ind2="", code="a")
-            experiment_list = record_get_field_values(hepname_bibrec, tag="693", ind1="", ind2="", code="e")
+
+            experiment_list = []
+            for instance in record_get_field_instances(hepname_bibrec, tag="693", ind1="", ind2=""):
+                if not instance or not field_get_subfield_values(instance, "e"):
+                    continue
+                experiment_info = ["", "", "", ""]
+                if field_get_subfield_values(instance, "e"):
+                    experiment_info[0] = field_get_subfield_values(instance, "e")[0]
+                if field_get_subfield_values(instance, "s"):
+                    experiment_info[1] = field_get_subfield_values(instance, "s")[0]
+                if field_get_subfield_values(instance, "t"):
+                    experiment_info[2] = field_get_subfield_values(instance, "t")[0]
+                if field_get_subfield_values(instance, "z"):
+                    experiment_info[3] = field_get_subfield_values(instance, "z")[0]
+                experiment_list.append(experiment_info)
+
             web_page = ''
             blog = ''
             for instance in record_get_field_instances(hepname_bibrec, tag="856", ind1="4", ind2=""):
@@ -216,6 +233,26 @@ def add_institutions_to_wash(form, wash_dict):
         wash_dict['current' + str(i)] = (str, '')
     return inst_nums
 
+def add_experiments_to_wash(form, wash_dict):
+    """
+    Adds additional experiments to wash dictionary.
+    It is needed because the experiments fields are
+    created dynamically by the user in the form page.
+
+    @param form: the received form
+    @type form: dictionary
+    @param wash_dict: the dictionary containing the
+    rules for washing the form arguments
+    @type wash_dict: dictionary
+    """
+    exp_nums = [key[-1] for key in form.keys() if key.startswith('exp')]
+    for i in exp_nums:
+        wash_dict['exp' + str(i)] = (str, '')
+        wash_dict['syExp' + str(i)] = (str, '')
+        wash_dict['eyExp' + str(i)] = (str, '')
+        wash_dict['currentExp' + str(i)] = (str, '')
+    return exp_nums
+
 def add_institutions_to_form_to_marc_mapping(institutions_numbers, argd, form_to_marc_mapping):
     """
     For every institution it adds a mapping to the
@@ -238,6 +275,29 @@ def add_institutions_to_form_to_marc_mapping(institutions_numbers, argd, form_to
               'sy' + str(i) : '371__s',
               'ey' + str(i) : '371__t',
               'current' + str(i) : '371__z'
+            })
+
+def add_experiments_to_form_to_marc_mapping(experiments_numbers, argd, form_to_marc_mapping):
+    """
+    For every experiment it adds a mapping to the
+    form_to_marc_mapping dictionary.
+
+    @param experiments_numbers: the numbers of experiments submitted by the user
+    @type experiments_numbers: list[int] e.g[1,2,5]
+    @param argd: the washed fields of the form
+    @type argd: dictionary
+    @param form_to_marc_mapping: a dictionary which 'describes' the fields that
+    have to be created and added to the bibrecord
+    @type form_to_marc_mapping: dictionary
+    """
+    for i in experiments_numbers:
+        exp = 'exp' + str(i)
+        if exp in argd:
+            form_to_marc_mapping.append(
+            { exp: '693__e',
+              'syExp' + str(i) : '693__s',
+              'eyExp' + str(i) : '693__t',
+              'currentExp' + str(i) : '693__z'
             })
 
 def create_bibrecord(person, argd, form_to_marc_mapping):
@@ -297,11 +357,7 @@ def create_bibrecord(person, argd, form_to_marc_mapping):
                                         '', [(marc_field[5], research_field)])
         if field_created != -1:
                     record_add_subfield_into(record, marc_field[:3], '2', 'INSPIRE', field_position_global=field_created)
-    # add experiments
-    marc_field = '693__e'
-    for experiment in argd['exp']:
-        field_created = record_add_field(record, marc_field[:3], marc_field[3], marc_field[4],
-                                        '', [(marc_field[5], experiment)])
+
     return record
 
 def create_tmp_xml_file(record_xml):
