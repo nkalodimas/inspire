@@ -31,7 +31,7 @@ def format_element(bfo):
             twitter_username = field.get('a','')
             if twitter_username:
                 twitter_link = '<a href="http://twitter.com/' +\
-                    twitter_username + '" >' + twitter_username + '</a>'
+                    twitter_username + '" >@' + twitter_username + '</a>'
             break
 
     return twitter_link
